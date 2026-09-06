@@ -1,0 +1,39 @@
+name: Build WAPDA Tracker APK
+
+# Ye workflow tab chalega jab aap "main" branch par code push karenge,
+# ya phir aap ise manually "Actions" tab se bhi run kar sakte hain.
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo checkout karein
+        uses: actions/checkout@v4
+
+      - name: Python setup karein
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Java JDK 17 setup karein
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Flet install karein
+        run: pip install flet
+
+      - name: APK build karein
+        run: yes | flet build apk -v
+
+      - name: APK ko upload karein (download ke liye)
+        uses: actions/upload-artifact@v4
+        with:
+          name: wapda-tracker-apk
+          path: build/apk/*.apk
